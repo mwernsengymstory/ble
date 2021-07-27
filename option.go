@@ -89,6 +89,20 @@ func OptDisconnectHandler(f func(evt.DisconnectionComplete)) Option {
 	}
 }
 
+func OptPeripheralConnectHandler(f func(Conn)) Option {
+	return func(opt DeviceOption) error {
+		opt.SetPeripheralConnectedHandler(f)
+		return nil
+	}
+}
+
+func OptPeripheralDisconnectHandler(f func(Conn)) Option {
+	return func(opt DeviceOption) error {
+		opt.SetPeripheralDisconnectedHandler(f)
+		return nil
+	}
+}
+
 // OptPeripheralRole configures the device to perform Peripheral tasks.
 func OptPeripheralRole() Option {
 	return func(opt DeviceOption) error {

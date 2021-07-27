@@ -115,7 +115,7 @@ type HCI struct {
 	disconnectedHandler func(evt.DisconnectionComplete)
 
 	peripheralConnectHandler    func(ble.Conn)
-	peripheralDisConnectHandler func(ble.Conn)
+	peripheralDisconnectHandler func(ble.Conn)
 
 	dialerTmo   time.Duration
 	listenerTmo time.Duration
@@ -557,6 +557,11 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 		// remote peripheral disconnected
 		close(c.chDone)
 	}
+
+	if c.param.Role() == roleSlave && h.peripheralDisconnectHandler != nil {
+		h.peripheralDisconnectHandler(c)
+	}
+
 	// When a connection disconnects, all the sent packets and weren't acked yet
 	// will be recycled. [Vol2, Part E 4.1.1]
 	//
@@ -568,10 +573,6 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 	c.txBuffer.UnlockPool()
 	if h.disconnectedHandler != nil {
 		h.disconnectedHandler(e)
-	}
-
-	if c.param.Role() == roleSlave && h.peripheralDisConnectHandler != nil {
-		h.peripheralDisConnectHandler(c)
 	}
 
 	return nil
