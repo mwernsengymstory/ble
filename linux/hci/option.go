@@ -60,7 +60,7 @@ func (h *HCI) SetPeripheralConnectedHandler(f func(conn ble.Conn)) error {
 
 // SetDisconnectedHandler sets handler to be called on disconnect.
 func (h *HCI) SetPeripheralDisconnectedHandler(f func(conn ble.Conn)) error {
-	h.peripheralDisConnectHandler = f
+	h.peripheralDisconnectHandler = f
 	return nil
 }
 
