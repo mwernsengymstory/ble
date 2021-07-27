@@ -2,8 +2,10 @@ package hci
 
 import (
 	"errors"
-	"github.com/mwernsengymstory/ble/linux/hci/evt"
 	"time"
+
+	"github.com/mwernsengymstory/ble"
+	"github.com/mwernsengymstory/ble/linux/hci/evt"
 
 	"github.com/mwernsengymstory/ble/linux/hci/cmd"
 )
@@ -47,6 +49,18 @@ func (h *HCI) SetConnectedHandler(f func(complete evt.LEConnectionComplete)) err
 // SetDisconnectedHandler sets handler to be called on disconnect.
 func (h *HCI) SetDisconnectedHandler(f func(evt.DisconnectionComplete)) error {
 	h.disconnectedHandler = f
+	return nil
+}
+
+// SetConnectedHandler sets handler to be called when new connection is established.
+func (h *HCI) SetPeripheralConnectedHandler(f func(conn ble.Conn)) error {
+	h.peripheralConnectHandler = f
+	return nil
+}
+
+// SetDisconnectedHandler sets handler to be called on disconnect.
+func (h *HCI) SetPeripheralDisconnectedHandler(f func(conn ble.Conn)) error {
+	h.peripheralDisConnectHandler = f
 	return nil
 }
 

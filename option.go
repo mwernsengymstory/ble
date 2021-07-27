@@ -1,8 +1,9 @@
 package ble
 
 import (
-	"github.com/mwernsengymstory/ble/linux/hci/evt"
 	"time"
+
+	"github.com/mwernsengymstory/ble/linux/hci/evt"
 
 	"github.com/mwernsengymstory/ble/linux/hci/cmd"
 )
@@ -17,6 +18,8 @@ type DeviceOption interface {
 	SetAdvParams(cmd.LESetAdvertisingParameters) error
 	SetConnectedHandler(f func(evt.LEConnectionComplete)) error
 	SetDisconnectedHandler(f func(evt.DisconnectionComplete)) error
+	SetPeripheralConnectedHandler(f func(Conn)) error
+	SetPeripheralDisconnectedHandler(f func(Conn)) error
 	SetPeripheralRole() error
 	SetCentralRole() error
 }
