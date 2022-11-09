@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/mwernsengymstory/ble"
 	"github.com/mwernsengymstory/ble/linux/hci/evt"
 
 	"github.com/mwernsengymstory/ble/linux/hci/cmd"
