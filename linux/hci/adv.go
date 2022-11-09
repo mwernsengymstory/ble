@@ -53,7 +53,13 @@ func (a *Advertisement) packets() *adv.Packet {
 
 // LocalName returns the LocalName of the remote peripheral.
 func (a *Advertisement) LocalName() string {
-	return a.packets().LocalName()
+	if a.packets().LocalName() != "" {
+		return a.packets().LocalName()
+	}
+	if a.sr != nil && a.sr.LocalName() != "" {
+		return a.sr.LocalName()
+	}
+	return ""
 }
 
 // ManufacturerData returns the ManufacturerData of the advertisement.

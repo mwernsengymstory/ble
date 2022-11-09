@@ -89,6 +89,7 @@ type HCI struct {
 	// Device information or status.
 	addr    net.HardwareAddr
 	txPwrLv int
+	rndAddr [6]byte
 
 	// adHist and adLast track the history of past scannable advertising packets.
 	// Controller delivers AD(Advertising Data) and SR(Scan Response) separately
@@ -164,6 +165,7 @@ func (h *HCI) Init() error {
 
 	h.Send(&h.params.advParams, nil)
 	h.Send(&h.params.scanParams, nil)
+	h.Send(&cmd.LESetRandomAddress{RandomAddress: h.rndAddr}, nil)
 	return nil
 }
 
@@ -230,7 +232,10 @@ func (h *HCI) init() error {
 
 // Send ...
 func (h *HCI) Send(c Command, r CommandRP) error {
+	// Only allow one send after another to prevent race condition
+	h.Mutex.Lock()
 	b, err := h.send(c)
+	h.Mutex.Unlock()
 	if err != nil {
 		return err
 	}
@@ -495,35 +500,26 @@ func (h *HCI) handleLEConnectionComplete(b []byte) error {
 		}
 		return nil
 	}
-	if e.Role() == roleSlave {
-		if e.Status() == 0x00 {
-			h.chSlaveConn <- c
-
-			if h.peripheralConnectHandler != nil {
-				h.peripheralConnectHandler(c)
-			}
-
-			// When a controller accepts a connection, it moves from advertising
-			// state to idle/ready state. Host needs to explicitly ask the
-			// controller to re-enable advertising. Note that the host was most
-			// likely in advertising state. Otherwise it couldn't accept the
-			// connection in the first place. The only exception is that user
-			// asked the host to stop advertising during this tiny window.
-			// The re-enabling might failed or ignored by the controller, if
-			// it had reached the maximum number of concurrent connections.
-			// So we also re-enable the advertising when a connection disconnected
-			h.params.RLock()
-			if h.params.advEnable.AdvertisingEnable == 1 {
-				go h.Send(&h.params.advEnable, nil)
-			}
-			h.params.RUnlock()
+	if e.Status() == 0x00 {
+		h.chSlaveConn <- c
+		// When a controller accepts a connection, it moves from advertising
+		// state to idle/ready state. Host needs to explicitly ask the
+		// controller to re-enable advertising. Note that the host was most
+		// likely in advertising state. Otherwise it couldn't accept the
+		// connection in the first place. The only exception is that user
+		// asked the host to stop advertising during this tiny window.
+		// The re-enabling might failed or ignored by the controller, if
+		// it had reached the maximum number of concurrent connections.
+		// So we also re-enable the advertising when a connection disconnected
+		h.params.RLock()
+		if h.params.advEnable.AdvertisingEnable == 1 {
+			go h.Send(&cmd.LESetAdvertiseEnable{AdvertisingEnable: 0}, nil)
 		}
+		h.params.RUnlock()
 	}
-
 	if h.connectedHandler != nil {
 		h.connectedHandler(e)
 	}
-
 	return nil
 }
 
@@ -543,7 +539,6 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 	close(c.chInPkt)
 
 	if c.param.Role() == roleSlave {
-
 		// Re-enable advertising, if it was advertising. Refer to the
 		// handleLEConnectionComplete() for details.
 		// This may failed with ErrCommandDisallowed, if the controller
@@ -557,11 +552,6 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 		// remote peripheral disconnected
 		close(c.chDone)
 	}
-
-	if c.param.Role() == roleSlave && h.peripheralDisconnectHandler != nil {
-		h.peripheralDisconnectHandler(c)
-	}
-
 	// When a connection disconnects, all the sent packets and weren't acked yet
 	// will be recycled. [Vol2, Part E 4.1.1]
 	//
@@ -574,7 +564,6 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 	if h.disconnectedHandler != nil {
 		h.disconnectedHandler(e)
 	}
-
 	return nil
 }
 

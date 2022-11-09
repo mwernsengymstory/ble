@@ -138,7 +138,7 @@ func Connect(ctx context.Context, f AdvFilter) (Client, error) {
 		cancel()
 		ch <- a
 	}
-	if err := Scan(ctx2, false, fn, f); err != nil {
+	if err := Scan(ctx2, true, fn, f); err != nil {
 		if err != context.Canceled {
 			return nil, errors.Wrap(err, "can't scan")
 		}

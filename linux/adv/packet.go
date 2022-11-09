@@ -211,7 +211,7 @@ func (p *Packet) fieldPos(typ byte, offset int) ([]byte, int) {
 	for len(b) > 0 {
 		l, t := b[0], b[1]
 		if int(l) < 1 || len(b) < int(1+l) {
-			return nil, pos
+			return nil, pos + len(b)
 		}
 		if t == typ {
 			r := b[2 : 2+l-1]
