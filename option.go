@@ -18,8 +18,6 @@ type DeviceOption interface {
 	SetAdvParams(cmd.LESetAdvertisingParameters) error
 	SetConnectedHandler(f func(evt.LEConnectionComplete)) error
 	SetDisconnectedHandler(f func(evt.DisconnectionComplete)) error
-	SetPeripheralConnectedHandler(f func(Conn)) error
-	SetPeripheralDisconnectedHandler(f func(Conn)) error
 	SetPeripheralRole() error
 	SetCentralRole() error
 	SetRandomAddress(addr [6]byte) error
@@ -86,20 +84,6 @@ func OptConnectHandler(f func(evt.LEConnectionComplete)) Option {
 func OptDisconnectHandler(f func(evt.DisconnectionComplete)) Option {
 	return func(opt DeviceOption) error {
 		opt.SetDisconnectedHandler(f)
-		return nil
-	}
-}
-
-func OptPeripheralConnectHandler(f func(Conn)) Option {
-	return func(opt DeviceOption) error {
-		opt.SetPeripheralConnectedHandler(f)
-		return nil
-	}
-}
-
-func OptPeripheralDisconnectHandler(f func(Conn)) Option {
-	return func(opt DeviceOption) error {
-		opt.SetPeripheralDisconnectedHandler(f)
 		return nil
 	}
 }

@@ -38,4 +38,7 @@ type Conn interface {
 
 	// Disconnected returns a receiving channel, which is closed when the connection disconnects.
 	Disconnected() <-chan struct{}
+
+	// PUpdate the connection parameters
+	Update(min uint16, max uint16, timeout uint16) error
 }

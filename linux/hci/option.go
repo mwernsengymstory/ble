@@ -52,18 +52,6 @@ func (h *HCI) SetDisconnectedHandler(f func(evt.DisconnectionComplete)) error {
 	return nil
 }
 
-// SetConnectedHandler sets handler to be called when new connection is established.
-func (h *HCI) SetPeripheralConnectedHandler(f func(conn ble.Conn)) error {
-	h.peripheralConnectHandler = f
-	return nil
-}
-
-// SetDisconnectedHandler sets handler to be called on disconnect.
-func (h *HCI) SetPeripheralDisconnectedHandler(f func(conn ble.Conn)) error {
-	h.peripheralDisconnectHandler = f
-	return nil
-}
-
 // SetAdvParams overrides default advertising parameters.
 func (h *HCI) SetAdvParams(param cmd.LESetAdvertisingParameters) error {
 	h.params.advParams = param

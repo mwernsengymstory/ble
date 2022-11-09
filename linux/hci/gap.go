@@ -2,6 +2,7 @@ package hci
 
 import (
 	"context"
+	"encoding/binary"
 	"fmt"
 	"net"
 	"time"
@@ -64,14 +65,18 @@ func (h *HCI) AdvertiseAdv(a ble.Advertisement) error {
 		}
 	}
 	sr, _ := adv.NewPacket()
-	switch {
-	case ad.Append(adv.CompleteName(a.LocalName())) == nil:
-	case sr.Append(adv.CompleteName(a.LocalName())) == nil:
-	case sr.Append(adv.ShortName(a.LocalName())) == nil:
+	if a.LocalName() != "" {
+		switch {
+		case ad.Append(adv.CompleteName(a.LocalName())) == nil:
+		case sr.Append(adv.CompleteName(a.LocalName())) == nil:
+		case sr.Append(adv.ShortName(a.LocalName())) == nil:
+		}
 	}
 
 	if a.ManufacturerData() != nil {
-		manufacuturerData := adv.ManufacturerData(1337, a.ManufacturerData())
+		man := a.ManufacturerData()
+		id := binary.LittleEndian.Uint16(man[0:2])
+		manufacuturerData := adv.ManufacturerData(id, man[2:])
 		switch {
 		case ad.Append(manufacuturerData) == nil:
 		case sr.Append(manufacuturerData) == nil:

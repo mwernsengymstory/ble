@@ -342,6 +342,19 @@ func (c *Conn) TxMTU() int { return c.txMTU }
 // SetTxMTU sets the MTU which the remote device is capable of accepting.
 func (c *Conn) SetTxMTU(mtu int) { c.txMTU = mtu }
 
+// Update the connection parameters
+func (c *Conn) Update(min uint16, max uint16, timeout uint16) error {
+	err := c.hci.Send(&cmd.LEConnectionUpdate{
+		ConnectionHandle:   c.param.ConnectionHandle(),
+		ConnIntervalMin:    min,
+		ConnIntervalMax:    max,
+		ConnLatency:        0,
+		SupervisionTimeout: timeout,
+	}, nil)
+
+	return err
+}
+
 // pkt implements HCI ACL Data Packet [Vol 2, Part E, 5.4.2]
 // Packet boundary flags , bit[5:6] of handle field's MSB
 // Broadcast flags. bit[7:8] of handle field's MSB
