@@ -89,6 +89,7 @@ type HCI struct {
 	// Device information or status.
 	addr    net.HardwareAddr
 	txPwrLv int
+	rndAddr [6]byte
 
 	// adHist and adLast track the history of past scannable advertising packets.
 	// Controller delivers AD(Advertising Data) and SR(Scan Response) separately
@@ -164,6 +165,7 @@ func (h *HCI) Init() error {
 
 	h.Send(&h.params.advParams, nil)
 	h.Send(&h.params.scanParams, nil)
+	h.Send(&cmd.LESetRandomAddress{RandomAddress: h.rndAddr}, nil)
 	return nil
 }
 

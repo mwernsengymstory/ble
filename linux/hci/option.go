@@ -79,3 +79,9 @@ func (h *HCI) SetPeripheralRole() error {
 func (h *HCI) SetCentralRole() error {
 	return errors.New("Not supported")
 }
+
+// SetRandomAddress set random address of device
+func (h *HCI) SetRandomAddress(addr [6]byte) error {
+	h.rndAddr = addr
+	return nil
+}

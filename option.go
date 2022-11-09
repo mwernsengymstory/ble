@@ -22,6 +22,7 @@ type DeviceOption interface {
 	SetPeripheralDisconnectedHandler(f func(Conn)) error
 	SetPeripheralRole() error
 	SetCentralRole() error
+	SetRandomAddress(addr [6]byte) error
 }
 
 // An Option is a configuration function, which configures the device.
@@ -115,6 +116,14 @@ func OptPeripheralRole() Option {
 func OptCentralRole() Option {
 	return func(opt DeviceOption) error {
 		opt.SetCentralRole()
+		return nil
+	}
+}
+
+// OptCentralRole configures the device to perform Central tasks.
+func OptRandomAddress(addr [6]byte) Option {
+	return func(opt DeviceOption) error {
+		opt.SetRandomAddress(addr)
 		return nil
 	}
 }
