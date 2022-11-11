@@ -123,7 +123,7 @@ func Dial(ctx context.Context, a Addr) (Client, error) {
 }
 
 // Connect searches for and connects to a Peripheral which matches specified condition.
-func Connect(ctx context.Context, f AdvFilter) (Client, error) {
+func Connect(ctx context.Context, f AdvFilter) (Client, Addr, error) {
 	ctx2, cancel := context.WithCancel(ctx)
 	go func() {
 		select {
@@ -140,12 +140,14 @@ func Connect(ctx context.Context, f AdvFilter) (Client, error) {
 	}
 	if err := Scan(ctx2, true, fn, f); err != nil {
 		if err != context.Canceled {
-			return nil, errors.Wrap(err, "can't scan")
+			return nil, nil, errors.Wrap(err, "can't scan")
 		}
 	}
 
-	cln, err := Dial(ctx, (<-ch).Addr())
-	return cln, errors.Wrap(err, "can't dial")
+	addr := (<-ch).Addr()
+	cln, err := Dial(ctx, addr)
+
+	return cln, addr, errors.Wrap(err, "can't dial")
 }
 
 // A NotificationHandler handles notification or indication from a server.
