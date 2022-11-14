@@ -105,10 +105,18 @@ func OptCentralRole() Option {
 	}
 }
 
-// OptCentralRole configures the device to perform Central tasks.
+// OptRandomAddress configures the device's random address
 func OptRandomAddress(addr [6]byte) Option {
 	return func(opt DeviceOption) error {
 		opt.SetRandomAddress(addr)
+		return nil
+	}
+}
+
+// OptSuggestedDefaultDataLength configures the suggested default data length
+func OptSuggestedDefaultDataLength(param cmd.LEWriteSuggestedDefaultDataLength) Option {
+	return func(opt DeviceOption) error {
+		opt.SetSuggestedDefaultDataLength(param)
 		return nil
 	}
 }
