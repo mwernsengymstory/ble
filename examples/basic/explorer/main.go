@@ -45,7 +45,7 @@ func main() {
 	// Scan for specified durantion, or until interrupted by user.
 	fmt.Printf("Scanning for %s...\n", *sd)
 	ctx := ble.WithSigHandler(context.WithTimeout(context.Background(), *sd))
-	cln, err := ble.Connect(ctx, filter)
+	cln, _, err := ble.Connect(ctx, filter)
 	if err != nil {
 		log.Fatalf("can't connect : %s", err)
 	}
