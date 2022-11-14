@@ -240,7 +240,7 @@ func cmdConnect(c *cli.Context) error {
 		cln, err = ble.Dial(ctx, curr.addr)
 	} else if filter(c) != nil {
 		fmt.Printf("Scanning with filter...\n")
-		if cln, err = ble.Connect(ctx, filter(c)); err == nil {
+		if cln, _, err = ble.Connect(ctx, filter(c)); err == nil {
 			curr.addr = cln.Addr()
 			fmt.Printf("Connected to %s\n", curr.addr)
 

@@ -28,7 +28,7 @@ func main() {
 	// Scan for device
 	log.Printf("Scanning for %s\n", *macAddr)
 	ctx := ble.WithSigHandler(context.WithTimeout(context.Background(), time.Second*300))
-	client, err := ble.Connect(ctx, filter)
+	client, _, err := ble.Connect(ctx, filter)
 	if err != nil {
 		panic(err)
 	}
