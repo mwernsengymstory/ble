@@ -166,6 +166,7 @@ func (h *HCI) Init() error {
 	h.Send(&h.params.advParams, nil)
 	h.Send(&h.params.scanParams, nil)
 	h.Send(&cmd.LESetRandomAddress{RandomAddress: h.rndAddr}, nil)
+	h.Send(&h.params.suggestedDataLengthParams, nil)
 	return nil
 }
 

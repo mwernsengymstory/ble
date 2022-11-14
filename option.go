@@ -16,6 +16,7 @@ type DeviceOption interface {
 	SetConnParams(cmd.LECreateConnection) error
 	SetScanParams(cmd.LESetScanParameters) error
 	SetAdvParams(cmd.LESetAdvertisingParameters) error
+	SetSuggestedDefaultDataLength(cmd.LEWriteSuggestedDefaultDataLength) error
 	SetConnectedHandler(f func(evt.LEConnectionComplete)) error
 	SetDisconnectedHandler(f func(evt.DisconnectionComplete)) error
 	SetPeripheralRole() error

@@ -13,11 +13,12 @@ type params struct {
 	scanEnable cmd.LESetScanEnable
 	connCancel cmd.LECreateConnectionCancel
 
-	advData    cmd.LESetAdvertisingData
-	scanResp   cmd.LESetScanResponseData
-	advParams  cmd.LESetAdvertisingParameters
-	scanParams cmd.LESetScanParameters
-	connParams cmd.LECreateConnection
+	advData                   cmd.LESetAdvertisingData
+	scanResp                  cmd.LESetScanResponseData
+	advParams                 cmd.LESetAdvertisingParameters
+	scanParams                cmd.LESetScanParameters
+	connParams                cmd.LECreateConnection
+	suggestedDataLengthParams cmd.LEWriteSuggestedDefaultDataLength
 }
 
 func (p *params) init() {
@@ -51,5 +52,9 @@ func (p *params) init() {
 		SupervisionTimeout:    0x0048,    // 0x000A - 0x0C80; N * 10 msec
 		MinimumCELength:       0x0000,    // 0x0000 - 0xFFFF; N * 0.625 msec
 		MaximumCELength:       0x0000,    // 0x0000 - 0xFFFF; N * 0.625 msec
+	}
+	p.suggestedDataLengthParams = cmd.LEWriteSuggestedDefaultDataLength{
+		Suggested_Max_TX_Octets: 0x1B,
+		Suggested_Max_TX_Time:   0x148,
 	}
 }

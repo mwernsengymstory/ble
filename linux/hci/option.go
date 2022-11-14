@@ -72,3 +72,9 @@ func (h *HCI) SetRandomAddress(addr [6]byte) error {
 	h.rndAddr = addr
 	return nil
 }
+
+// SetSuggestedDefaultDataLength set default data length
+func (h *HCI) SetSuggestedDefaultDataLength(param cmd.LEWriteSuggestedDefaultDataLength) error {
+	h.params.suggestedDataLengthParams = param
+	return nil
+}
