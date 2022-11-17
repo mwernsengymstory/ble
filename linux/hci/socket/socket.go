@@ -77,7 +77,7 @@ func NewSocket(id int) (*Socket, error) {
 	}
 	var msg string
 	for id := 0; id < int(req.devNum); id++ {
-		s, err := open(fd, id)
+		s, err := open(fd, int(req.devRequest[id].id))
 		if err == nil {
 			return s, nil
 		}
