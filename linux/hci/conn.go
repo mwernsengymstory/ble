@@ -195,6 +195,11 @@ func (c *Conn) writePDU(pdu []byte) (int, error) {
 	c.txBuffer.LockPool()
 	defer c.txBuffer.UnlockPool()
 
+	// Lock client to prevent race condition where writePDU is called after disconnection event is handled
+	// This will otherwise result in loss of a buffer from the pool
+	c.txBuffer.Lock()
+	defer c.txBuffer.Unlock()
+
 	// Fail immediately if the connection is already closed
 	// Check this with the pool locked to avoid race conditions
 	// with handleDisconnectionComplete

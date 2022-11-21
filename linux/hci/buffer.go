@@ -25,6 +25,8 @@ func NewPool(sz int, cnt int) *Pool {
 
 // Client ...
 type Client struct {
+	sync.Mutex
+
 	p    *Pool
 	sent chan *bytes.Buffer
 }
