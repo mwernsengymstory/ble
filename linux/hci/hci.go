@@ -532,6 +532,11 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 	e := evt.DisconnectionComplete(b)
 	h.muConns.Lock()
 	c, found := h.conns[e.ConnectionHandle()]
+
+	// Lock hci client to prevent sending of more PDU messages to disconnected client
+	c.txBuffer.Lock()
+	defer c.txBuffer.Unlock()
+
 	delete(h.conns, e.ConnectionHandle())
 	h.muConns.Unlock()
 	if !found {
@@ -553,17 +558,10 @@ func (h *HCI) handleDisconnectionComplete(b []byte) error {
 		// remote peripheral disconnected
 		close(c.chDone)
 	}
+
 	// When a connection disconnects, all the sent packets and weren't acked yet
 	// will be recycled. [Vol2, Part E 4.1.1]
-	//
-	// must be done with the CLient locked to avoid race conditions where
-	// writePDU is in progress and does a Get from the pool after this completes,
-	// leaking a buffer from the main pool.
-	// Do not lock pool as this might cause a deadlock when the buffer is empty and write PDU is in progress
-
-	c.txBuffer.Lock()
 	c.txBuffer.PutAll()
-	c.txBuffer.Unlock()
 	if h.disconnectedHandler != nil {
 		h.disconnectedHandler(e)
 	}

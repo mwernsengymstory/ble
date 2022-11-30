@@ -195,11 +195,6 @@ func (c *Conn) writePDU(pdu []byte) (int, error) {
 	c.txBuffer.LockPool()
 	defer c.txBuffer.UnlockPool()
 
-	// Lock client to prevent race condition where writePDU is called after disconnection event is handled
-	// This will otherwise result in loss of a buffer from the pool
-	c.txBuffer.Lock()
-	defer c.txBuffer.Unlock()
-
 	// Fail immediately if the connection is already closed
 	// Check this with the pool locked to avoid race conditions
 	// with handleDisconnectionComplete
@@ -236,12 +231,18 @@ func (c *Conn) writePDU(pdu []byte) (int, error) {
 			return 0, err
 		}
 
-		// Flush the pkt to HCI
+		// Validate client is still connected
+		c.txBuffer.Lock()
 		select {
 		case <-c.chDone:
+			c.txBuffer.PutAll()
+			c.txBuffer.Unlock()
 			return 0, io.ErrClosedPipe
 		default:
 		}
+		c.txBuffer.Unlock()
+
+		// Flush the pkt to HCI
 
 		if _, err := c.hci.skt.Write(pkt.Bytes()); err != nil {
 			return sent, err
