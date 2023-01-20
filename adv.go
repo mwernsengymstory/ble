@@ -16,6 +16,7 @@ type Advertisement interface {
 	TxPowerLevel() int
 	Connectable() bool
 	SolicitedService() []UUID
+	EventType() uint8
 
 	RSSI() int
 	Addr() Addr
