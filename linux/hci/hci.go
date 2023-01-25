@@ -606,3 +606,10 @@ func (h *HCI) setAllowedCommands(n int) {
 		h.chCmdBufs <- make([]byte, 64) // TODO make buffer size a constant
 	}
 }
+func (d *HCI) GetPoolCount() (int, int) {
+	d.pool.Lock()
+	len := len(d.pool.ch)
+	d.pool.Unlock()
+
+	return len, d.pool.cnt
+}

@@ -42,4 +42,9 @@ type Device interface {
 
 	// Dial ...
 	Dial(ctx context.Context, a Addr) (Client, error)
+
+	// DEBUG METHODS
+
+	/// GetPool count return the current and allocated pool count
+	GetPoolCount() (int, int)
 }

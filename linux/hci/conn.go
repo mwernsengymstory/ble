@@ -384,12 +384,3 @@ type leFrameHdr pdu
 
 func (f leFrameHdr) slen() int       { return int(binary.LittleEndian.Uint16(f[4:6])) }
 func (f leFrameHdr) payload() []byte { return f[6:] }
-
-// DEBUG METHODS
-func (c *Conn) GetPoolCount() (int, int) {
-	c.txBuffer.LockPool()
-	len := len(c.txBuffer.p.ch)
-	c.txBuffer.UnlockPool()
-
-	return len, c.txBuffer.p.cnt
-}
