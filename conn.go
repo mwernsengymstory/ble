@@ -41,4 +41,9 @@ type Conn interface {
 
 	// PUpdate the connection parameters
 	Update(min uint16, max uint16, timeout uint16) error
+
+	// DEBUG METHODS
+
+	/// GetPool count return the current and allocated pool count
+	GetPoolCount() (int, int)
 }
