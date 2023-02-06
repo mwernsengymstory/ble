@@ -237,9 +237,11 @@ func (h *HCI) cancelDial() (ble.Client, error) {
 	}
 	// The connection has been established, the cancel command
 	// failed with ErrDisallowed.
-	if err == ErrDisallowed {
-		return gatt.NewClient(<-h.chMasterConn)
-	}
+
+	// FIXME: This might cause deadlocking issues when called from [Dial()]
+	// if err == ErrDisallowed {
+	// 	return gatt.NewClient(<-h.chMasterConn)
+	// }
 	return nil, errors.Wrap(err, "cancel connection failed")
 }
 

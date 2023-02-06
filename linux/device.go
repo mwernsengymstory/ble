@@ -192,3 +192,8 @@ func (d *Device) Dial(ctx context.Context, a ble.Addr) (ble.Client, error) {
 func (d *Device) Address() ble.Addr {
 	return d.HCI.Addr()
 }
+
+// DEBUG METHODS
+func (d *Device) GetPoolCount() (int, int) {
+	return d.HCI.GetPoolCount()
+}
