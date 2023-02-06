@@ -48,10 +48,14 @@ func NewHCI(opts ...ble.Option) (*HCI, error) {
 		evth: map[int]handlerFn{},
 		subh: map[int]handlerFn{},
 
-		muConns:      &sync.Mutex{},
-		conns:        make(map[uint16]*Conn),
-		chMasterConn: make(chan *Conn),
-		chSlaveConn:  make(chan *Conn),
+		muConns: &sync.Mutex{},
+		conns:   make(map[uint16]*Conn),
+
+		// Make connection channels buffered with single entry.
+		// If not buffered race condition might lead to deadlock
+		// Caused by: handleLEConnectionComplete fired before listening in Dial
+		chMasterConn: make(chan *Conn, 1),
+		chSlaveConn:  make(chan *Conn, 1),
 
 		done: make(chan bool),
 	}
